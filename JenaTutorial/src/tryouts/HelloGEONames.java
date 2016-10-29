@@ -1,3 +1,4 @@
+package tryouts;
 import java.util.Iterator;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
