@@ -1,0 +1,32 @@
+#%RAML 0.8
+title: hybris Service Archetype
+baseUri: http://localhost/
+version: v1
+mediaType:  application/json
+
+schemas:
+  - destinations: !include schemas/destinations.json
+  - destination: !include schemas/destination.json
+  - error: !include https://api.yaas.io/patterns/v1/schema-error-message.json
+
+traits: 
+  - !include https://api.yaas.io/patterns/v2/trait-yaas-aware.yaml
+
+resourceTypes: 
+  - !include https://api.yaas.io/patterns/v2/resource-type-element.yaml
+  - !include https://api.yaas.io/patterns/v1/resource-type-collection.yaml
+
+/destination:
+  type: collection
+  get:
+    description: Noch nicht implementiert
+    responses:
+      200:
+        body:
+          application/json:
+            
+  post:
+    description: Post selected criteria to the server
+    body:
+      application/json:
+        
