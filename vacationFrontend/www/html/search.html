@@ -1,0 +1,44 @@
+<ion-view view-title="Vacation Destination Finder">
+  <ion-content>
+    <form class="list " id="form_search">
+            <ion-item id="item_temperatures" class="item-divider ">Temperatures</ion-item>
+            <label id="selectKategorie" class="item item-select">
+                <span class="input-label"></span>
+                <select ng-model="temperature" ng-init="" name="dropdown_temperature" required>
+                    <option ng-selected="true" value="TMP_ALL">All</option>
+                    <option value="TMP_COLD">Cold</option>
+                    <option value="TMP_WARM">Warm</option>
+                    <option value="TMP_HOT">Hot</option>
+                    <!-- <option ng-repeat = "item in temperatures" >
+                        {{item.text}}
+                    </option> -->
+                </select>
+            </label>
+            <ion-item  class="item-divider ">Continent</ion-item>
+            <label  class="item item-select ">
+                <span class="input-label"></span>
+                <select ng-model="continent" ng-init="" name="dropdown_continent" required>
+                    <option ng-selected="true" value="CON_ALL">All</option>
+                    <option value="CON_AFRICA">Africa</option>
+                    <option value="CON_AMERICA">America</option>
+                    <option value="CON_ASIA">Asia</option>
+                    <option value="CON_AUSTRALIA">Australia</option>
+                    <option value="CON_EUROPE">Europe</option>
+                    <!--<option ng-repeat = "item in sorterOrder" >
+                      {{item.text}}
+                    </option>-->
+                </select>
+            </label>
+            <ion-item  class="item-divider ">From where?</ion-item>
+            <label id="input_fromwhere" class="item item-input ">
+                <input type="text" ng-model="fromwhere" name="input_fromwhere">
+            </label>
+            <!--<ion-radio  ng-repeat = "item in sorterOrder" ng-value="item.value" ng-model="dataOrder.value" name="order"  id="radio2">{{item.text}}</ion-radio>-->
+            <a class=" button button-positive  button-block icon ion-search"  ng-click="search(temperature,continent,fromwhere)" id="but_search">Search Locations</a>
+        </form>
+        <label id="output" class="item item-input ">
+            <input type="text" ng-model="resultText" name="output" readonly>
+        </label>
+        <a class=" button button-positive  button-block icon ion-search"  ng-click="openMap(here_lat, here_lng)" id="but_search">Open Map (temporary)</a>
+  </ion-content>
+</ion-view>
