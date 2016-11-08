@@ -12,6 +12,8 @@ angular.module('starter.controllers', [])
   $scope.continent = "TMP_ALL";
   $scope.fromwhere = "Anywhere";
 
+  $scope.resultText = "-";
+
   $scope.search = function(temperature,continent,fromwhere) {
     console.log(temperature + ', ' + continent + ', ' + fromwhere);
     var parameter = {
@@ -23,6 +25,16 @@ angular.module('starter.controllers', [])
     // $http.post(apiendpoint.url + '/api/', parameter).success(function(response) {
     //         console.log('HTTP-Post response: ' + response);
     // });
+
+
+
+      if($scope.resultText == "not yet implemented"){
+        $scope.resultText = "stop pressing me";
+      }else if($scope.resultText == "stop pressing me"){
+        $scope.resultText = "dude...";
+      } else{
+        $scope.resultText = "not yet implemented";
+      }
   }
 
   $scope.openMap = function(lat, lng){

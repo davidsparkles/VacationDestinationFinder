@@ -1,7 +1,7 @@
 <ion-view view-title="Vacation Destination Finder">
   <ion-content>
     <form class="list " id="form_search">
-            <ion-item id="investitionSuchen-list-item-divider3" class="item-divider ">Temperatures</ion-item>
+            <ion-item id="item_temperatures" class="item-divider ">Temperatures</ion-item>
             <label id="selectKategorie" class="item item-select">
                 <span class="input-label"></span>
                 <select ng-model="temperature" ng-init="" name="dropdown_temperature" required>
@@ -36,6 +36,9 @@
             <!--<ion-radio  ng-repeat = "item in sorterOrder" ng-value="item.value" ng-model="dataOrder.value" name="order"  id="radio2">{{item.text}}</ion-radio>-->
             <a class=" button button-positive  button-block icon ion-search"  ng-click="search(temperature,continent,fromwhere)" id="but_search">Search Locations</a>
         </form>
+        <label id="output" class="item item-input ">
+            <input type="text" ng-model="resultText" name="output" readonly>
+        </label>
         <a class=" button button-positive  button-block icon ion-search"  ng-click="openMap(here_lat, here_lng)" id="but_search">Open Map (temporary)</a>
   </ion-content>
 </ion-view>
