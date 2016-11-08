@@ -1,4 +1,4 @@
-<ion-view view-title="Search">
+<ion-view view-title="Vacation Destination Finder">
   <ion-content>
     <form class="list " id="form_search">
             <ion-item id="investitionSuchen-list-item-divider3" class="item-divider ">Temperatures</ion-item>
@@ -36,5 +36,6 @@
             <!--<ion-radio  ng-repeat = "item in sorterOrder" ng-value="item.value" ng-model="dataOrder.value" name="order"  id="radio2">{{item.text}}</ion-radio>-->
             <a class=" button button-positive  button-block icon ion-search"  ng-click="search(temperature,continent,fromwhere)" id="but_search">Search Locations</a>
         </form>
+        <a class=" button button-positive  button-block icon ion-search"  ng-click="openMap(here_lat, here_lng)" id="but_search">Open Map (temporary)</a>
   </ion-content>
 </ion-view>

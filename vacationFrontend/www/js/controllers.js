@@ -7,7 +7,7 @@ angular.module('starter.controllers', [])
     return service;
 })
 
-.controller('SearchCtrl', function($scope, $http, apiendpoint) {
+.controller('SearchCtrl', function($scope, $state, $http, apiendpoint) {
   $scope.temperature = "TMP_ALL";
   $scope.continent = "TMP_ALL";
   $scope.fromwhere = "Anywhere";
@@ -25,6 +25,31 @@ angular.module('starter.controllers', [])
     // });
   }
 
+  $scope.openMap = function(lat, lng){
+    $state.go('app.map');
+  }
+
+})
+
+.controller('MapCtrl', function($scope, $state) {
+  // var options = {timeout: 10000, enableHighAccuracy: true};
+
+  // $cordovaGeolocation.getCurrentPosition(options).then(function(position){
+
+    // var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+    var mapOptions = {
+      center: {lat: 49.4836, lng: 8.4630},
+      // center: latLng,
+      zoom: 13,
+      // mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+  // }, function(error){
+  //   console.log("Could not get location");
+  // });
 })
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {

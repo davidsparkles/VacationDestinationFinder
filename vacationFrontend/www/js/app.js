@@ -41,15 +41,18 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     }
   })
-  //
-  // .state('app.browse', {
-  //     url: '/browse',
-  //     views: {
-  //       'menuContent': {
-  //         templateUrl: 'templates/browse.html'
-  //       }
-  //     }
-  //   })
+
+  .state('app.map', {
+      url: '/map',
+      views: {
+        'menuContent': {
+          templateUrl: 'html/map.html',
+          controller: 'MapCtrl'
+        }
+      }
+    })
+
+
   //   .state('app.playlists', {
   //     url: '/playlists',
   //     views: {
