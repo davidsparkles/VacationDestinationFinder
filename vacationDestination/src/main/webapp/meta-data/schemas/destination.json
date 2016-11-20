@@ -4,33 +4,25 @@
   "type":"object",
   "properties":
   {
-    "id":
+    "month":
+    {
+      "type":"integer"
+    },
+    "transportation":
     {
       "type":"string"
     },
-    "url":
+    "distance":
     {
-      "type":"string",
-      "format":"uri"
+      "type":"string"
     },
-    "owner":
+    "temperature":
     {
-      "type":"string",
-      "pattern":"^.+"
+      "type":"string"
     },
-    "title":
+    "location":
     {
-      "type":"string",
-      "pattern":"^.+"
-    },
-    "description":
-    {
-        "$ref" : "https://api.yaas.io/patterns/v1/schema-localized.json"
-    },
-    "createdAt":
-    {
-      "type":"string",
-      "format":"date-time"
+      "type":"string"
     }
   }
 }

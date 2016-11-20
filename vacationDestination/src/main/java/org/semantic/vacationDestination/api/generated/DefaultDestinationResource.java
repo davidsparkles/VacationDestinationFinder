@@ -1,15 +1,33 @@
 
 package org.semantic.vacationDestination.api.generated;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,12 +54,50 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 	public Response post(final Destination destination)
 	{
 		String returnString="";
-		// place some logic here
 		
+		String restDistance = destination.getDistance();
+		String restTemperature = destination.getTemperature();
+		String restTransportation = destination.getTransportation();
+		String restLocation = destination.getLocation();
+		int month = destination.getMonth();
 		
-		//if airplane - travelspeed is 762km/h
-		//if car - travelspeed is 89,9km/h
+		//TODO only testcity
+		String city="Stuttgart";
+		String a ="http://api.worldweatheronline.com/premium/v1/weather.ashx?key=40dd3fd2475942d48a6140651161611&q="+city+"&format=json&fx=no&cc=no&mca=yes";
+		HttpClient httpclient = HttpClients.createDefault();
+		try {
+			URI apiURI = new URIBuilder(a).build();
+			HttpGet apiHttpGet = new HttpGet(apiURI);
+			HttpResponse apiResponse = httpclient.execute(apiHttpGet);
+			String jsonResponse = EntityUtils.toString(apiResponse.getEntity(),"UTF-8");
+			
+			JSONParser jsonParser = new JSONParser();
+			
+			JSONArray months = (JSONArray)((JSONObject)((JSONArray)((JSONObject)((JSONObject)jsonParser.parse(jsonResponse)).get("data")).get("ClimateAverages")).get(0)).get("month");
+			
+			Double avgMinTemp = Double.parseDouble(((JSONObject)months.get(month-1)).get("avgMinTemp").toString());
+			
+			System.out.println(avgMinTemp);
+			
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
+		Double effectiveDistance=-1.0;
+		if(restTransportation!=null&&restDistance!=null)effectiveDistance=calculateDistance(restTransportation,restDistance);
+		
+		//TODO calculate distance based on coordinates and compare them with the effectiveDistance
+		//TODO query to get the latlong from currentlocation
 		
 		
 		String queryString = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
@@ -76,8 +132,27 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		} finally {
 			qexec.close();
 		}
+		
+		//TODO build JSON return
+		JSONObject returnObject = new JSONObject();
+		JSONArray cityArray = new JSONArray();
+		JSONObject latCoord = new JSONObject();
+		JSONObject longCoord = new JSONObject();
+		
+		cityArray.add(latCoord);
+		cityArray.add(longCoord);
+		returnObject.put(city, cityArray);
+		
 		return Response.ok()
 				.entity(returnString).build();
+	}
+
+	private Double calculateDistance(String restTransportation, String restDistance) {
+		Double travelspeed=-1.0;
+		if(restTransportation.equals("car"))travelspeed=89.9;
+		else if(restTransportation.equals("plane"))travelspeed=762.0;
+		Double effectiveDistance=Double.parseDouble(restDistance.substring(0,restDistance.indexOf("h")));
+		return travelspeed*effectiveDistance;
 	}
 
 }
