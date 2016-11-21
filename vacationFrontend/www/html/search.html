@@ -35,10 +35,23 @@
             </label>
             <!--<ion-radio  ng-repeat = "item in sorterOrder" ng-value="item.value" ng-model="dataOrder.value" name="order"  id="radio2">{{item.text}}</ion-radio>-->
             <a class=" button button-positive  button-block icon ion-search"  ng-click="search(temperature,continent,fromwhere)" id="but_search">Search Locations</a>
-        </form>
-        <label id="output" class="item item-input ">
+    </form>
+    <ion-list>
+      <ion-item  ng-repeat="result in results" type="item-text-wrap" ng-click="openMap({{result.name}},{{result.lat}},{{result.long}})">
+        <!-- ng-class="get_item_class({{event}})" -->
+        <!-- <img ng-src="{{chat.face}}"> -->
+        {{result.name}} - {{result.score}}
+
+        <i class="icon ion-chevron-right icon-accessory"></i>
+
+        <!-- <ion-option-button class="button-assertive" ng-click="remove(chat)">
+          Delete
+        </ion-option-button> -->
+      </ion-item>
+    </ion-list>
+        <!-- <label id="output" class="item item-input ">
             <input type="text" ng-model="resultText" name="output" readonly>
-        </label>
-        <a class=" button button-positive  button-block icon ion-search"  ng-click="openMap(here_lat, here_lng)" id="but_search">Open Map (temporary)</a>
+        </label> -->
+        <!-- <a class=" button button-positive  button-block icon ion-search"  ng-click="openMap(here_lat, here_lng)" id="but_search">Open Map (temporary)</a> -->
   </ion-content>
 </ion-view>
