@@ -14,6 +14,8 @@ angular.module('starter.controllers', [])
 
   $scope.resultText = "-";
 
+  $scope.results = [];
+
   $scope.search = function(temperature,continent,fromwhere) {
     console.log(temperature + ', ' + continent + ', ' + fromwhere);
     var parameter = {
@@ -25,33 +27,27 @@ angular.module('starter.controllers', [])
     // $http.post(apiendpoint.url + '/api/', parameter).success(function(response) {
     //         console.log('HTTP-Post response: ' + response);
     // });
+    $scope.results = [{name:"Berlin",lat:52.521918,long:13.413215,score:"99%"},{name:"London",lat:51.5073509,long:-0.1277583,score:"80%"}];
 
-
-
-      if($scope.resultText == "not yet implemented"){
-        $scope.resultText = "stop pressing me";
-      }else if($scope.resultText == "stop pressing me"){
-        $scope.resultText = "dude...";
-      } else{
-        $scope.resultText = "not yet implemented";
-      }
   }
 
-  $scope.openMap = function(lat, lng){
-    $state.go('app.map');
+  $scope.openMap = function(name, lat, long){
+    console.log("name: " + name);
+    $state.go('app.map',{name: name, lat: lat, long: long});
   }
 
 })
 
-.controller('MapCtrl', function($scope, $state) {
+.controller('MapCtrl', function($scope, $state, $stateParams) {
   // var options = {timeout: 10000, enableHighAccuracy: true};
 
   // $cordovaGeolocation.getCurrentPosition(options).then(function(position){
 
     // var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
+    console.log("stateParams: " + $stateParams.name + " " + $stateParams.lat + " "  + $stateParams.long);
     var mapOptions = {
-      center: {lat: 49.4836, lng: 8.4630},
+      center: {lat: Number($stateParams.lat), lng: Number($stateParams.long)},
       // center: latLng,
       zoom: 13,
       // mapTypeId: google.maps.MapTypeId.ROADMAP
