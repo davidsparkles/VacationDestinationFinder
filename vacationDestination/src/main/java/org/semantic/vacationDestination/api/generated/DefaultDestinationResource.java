@@ -99,7 +99,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		//TODO calculate distance based on coordinates and compare them with the effectiveDistance
 		//TODO query to get the latlong from currentlocation
 		
-		
+		//TestPushComment
 		String queryString = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
 				"PREFIX rdfs: <https://www.w3.org/2000/01/rdf-schema#>\n" +
 				"PREFIX onto: <http://www.ontotext.com/proton/protontop#>\n" +
