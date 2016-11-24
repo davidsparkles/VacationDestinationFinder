@@ -102,6 +102,8 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		
 		double latitude = 49.4875;
 		double longitude = 8.4660;
+		double maxElevation = 1000;
+		double minElevation = 0;
 		int maxPopulation = 100000000;
 		int minPopulation = 150000;
 		double distanceInKm = 100.0;
@@ -137,6 +139,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					"?settlement rdfs:label ?label ."+
 					"FILTER(LANG(?label) = '' || LANGMATCHES(LANG(?label), 'en'))"+
 					"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
+					"FILTER(?elevation > +"+minElevation+" && ?elevation <"+maxElevation+")"+
 			        "FILTER(bif:st_intersects (?point, 'POINT("+longitude+" "+latitude+")'^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>, "+distanceInKm+")) ." +
 			    	
 				"}"+
