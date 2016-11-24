@@ -106,6 +106,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				"PREFIX dbp: <http://dbpedia.org/property/>\n" +
 				"PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
 				"PREFIX georss: <http://www.georss.org/georss/>\n" +
+				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"+
 				"select distinct *\n" + 
 				"Where{{"+
 						"?settlement a dbo:City"+
