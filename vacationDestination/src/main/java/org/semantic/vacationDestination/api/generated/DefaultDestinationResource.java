@@ -55,20 +55,23 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 	public Response post(final Destination destination)
 	{
 		String returnString="";
-		
-		String restDistance = destination.getDistance();
-		String restTemperature = destination.getTemperature();
-		String restTransportation = destination.getTransportation();
-		String restLocation = destination.getLocation();
+		String restDistance="";
+		String restTemperature="";
+		String restTransportation="";
+		String restLocation="";
+		if(destination.getDistance()!=null) restDistance = destination.getDistance();
+		if(destination.getTemperature()!=null) restTemperature = destination.getTemperature();
+		if(destination.getTransportation()!=null) restTransportation = destination.getTransportation();
+		if(destination.getLocation()!=null) restLocation = destination.getLocation();
 		int month = destination.getMonth();
 		
 		//TODO only testcity
 		String city="Stuttgart";
-		String a ="http://api.worldweatheronline.com/premium/v1/weather.ashx?key=40dd3fd2475942d48a6140651161611&q="+city+"&format=json&fx=no&cc=no&mca=yes";
+		String weather ="http://api.worldweatheronline.com/premium/v1/weather.ashx?key=40dd3fd2475942d48a6140651161611&q="+city+"&format=json&fx=no&cc=no&mca=yes";
 		HttpClient httpclient = HttpClients.createDefault();
 		try {
-			URI apiURI = new URIBuilder(a).build();
-			HttpGet apiHttpGet = new HttpGet(apiURI);
+			URI weatherApiURI = new URIBuilder(weather).build();
+			HttpGet apiHttpGet = new HttpGet(weatherApiURI);
 			HttpResponse apiResponse = httpclient.execute(apiHttpGet);
 			String jsonResponse = EntityUtils.toString(apiResponse.getEntity(),"UTF-8");
 			
