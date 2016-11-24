@@ -117,6 +117,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 
 
 		String defaultSettlementQuery = 
+				"PREFIX bif: <bif:>\n" +
 				"PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
 				"PREFIX dbp: <http://dbpedia.org/property/>\n" +
 				"PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
@@ -189,7 +190,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		String serviceStringDBpedia = "http://dbpedia.org/sparql";
 		String serviceString = "http://factforge.net/sparql";
 		
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(serviceString, query);
+		QueryExecution qexec = QueryExecutionFactory.sparqlService(serviceStringDBpedia, query);
 		
 		try{
 			ResultSet results = qexec.execSelect();
