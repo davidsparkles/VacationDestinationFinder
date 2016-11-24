@@ -29,6 +29,17 @@
                     </option>-->
                 </select>
             </label>
+            <ion-item  class="item-divider ">Country</ion-item>
+            <label  class="item item-select ">
+                <span class="input-label"></span>
+                <select ng-model="sel_country" ng-init="" name="dropdown_country">
+                    <option ng-selected="true">Germany</option>
+                    <option ng-repeat = "x in countries">{{x.name}}</option>
+                    <!--<option ng-repeat = "item in sorterOrder" >
+                      {{item.text}}
+                    </option>-->
+                </select>
+            </label>
             <ion-item  class="item-divider ">From where?</ion-item>
             <label id="input_fromwhere" class="item item-input ">
                 <input type="text" ng-model="fromwhere" name="input_fromwhere">
