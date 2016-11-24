@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
@@ -99,7 +100,42 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		//TODO calculate distance based on coordinates and compare them with the effectiveDistance
 		//TODO query to get the latlong from currentlocation
 		
-		//TestPushComment
+		
+		String defaultSettlementQuery = 
+				"PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
+				"PREFIX dbp: <http://dbpedia.org/property/>\n" +
+				"PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
+				"PREFIX georss: <http://www.georss.org/georss/>\n" +
+				"select distinct *\n" + 
+				"Where{{"+
+						"?settlement a dbo:City"+
+					"}"+
+					"UNION"+
+					"{"+
+						"?settlement a dbo:Town"+
+					"}"+
+						"UNION"+
+					"{"+
+						"?settlement a dbo:Village"+
+					"}"+
+						"UNION"+
+					"{"+
+						"?settlement a dbo:CityDistrict"+
+					"}"+
+						"UNION"+
+					"{"+
+						"?settlement a dbo:HistoricalSettlement"+
+					"}"+
+					"?settlement dbo:populationTotal ?population ."+
+					"?settlement dbo:country ?country ."+
+					"?settlement dbo:elevation ?elevation ."+
+					"?settlement georss:point ?point ."+
+					"?settlement rdfs:label ?label ."+
+					"FILTER(LANG(?label) = '' || LANGMATCHES(LANG(?label), 'en'))"+
+					"FILTER (?population > 150000)"+
+				"}"+
+				"ORDER BY ?population";
+		
 		String queryString = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
 				"PREFIX rdfs: <https://www.w3.org/2000/01/rdf-schema#>\n" +
 				"PREFIX onto: <http://www.ontotext.com/proton/protontop#>\n" +
@@ -114,7 +150,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				"}\n" + 
 				"LIMIT 100";
 		
-		Query query = QueryFactory.create(queryString);
+		Query query = QueryFactory.create(defaultSettlementQuery);
 		
 		String serviceStringDBpedia = "http://dbpedia.org/sparql";
 		String serviceString = "http://factforge.net/sparql";
@@ -125,9 +161,11 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 			ResultSet results = qexec.execSelect();
 			while(results.hasNext()){
 				QuerySolution result = results.next();
-//				if(result.contains("settlement"))
-				returnString = returnString+ result.get("Continent") + " - " + result.get("p") + " - " + result.get("o") +"\n";
-				System.out.println(result.get("Continent") + " - " + result.get("p") + " - " + result.get("o"));
+				List<String> variables = results.getResultVars();
+				for(int i =0;i< results.getResultVars().size();i++){
+					returnString = returnString+ "\n"+variables.get(i)+" : "+result.get(variables.get(i));
+					System.out.println(variables.get(i)+" : "+result.get(variables.get(i)));					
+				}
 			}
 		} finally {
 			qexec.close();
