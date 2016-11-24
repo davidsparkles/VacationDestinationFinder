@@ -23,6 +23,10 @@
     "location":
     {
       "type":"string"
+    },
+    "specification":
+    {
+      "type":"string"
     }
   }
 }

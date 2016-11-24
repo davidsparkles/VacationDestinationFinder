@@ -54,67 +54,74 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 	@Override
 	public Response post(final Destination destination)
 	{
+		
+		double latitude = 49.4875;
+		double longitude = 8.4660;
+		double maxElevation = 0;
+		double minElevation = 0;
+		double effectiveDistance=1000.0;
+		int maxPopulation = 100000000;
+		int minPopulation = 150000;
+		
 		String returnString="";
 		String restDistance="";
 		String restTemperature="";
 		String restTransportation="";
 		String restLocation="";
+		String specification="";
 		if(destination.getDistance()!=null) restDistance = destination.getDistance();
 		if(destination.getTemperature()!=null) restTemperature = destination.getTemperature();
 		if(destination.getTransportation()!=null) restTransportation = destination.getTransportation();
 		if(destination.getLocation()!=null) restLocation = destination.getLocation();
+		if(destination.getSpecification()!=null) restLocation = destination.getSpecification();
 		int month = destination.getMonth();
 		
 		//TODO only testcity
 		String city="Stuttgart";
 		String weather ="http://api.worldweatheronline.com/premium/v1/weather.ashx?key=40dd3fd2475942d48a6140651161611&q="+city+"&format=json&fx=no&cc=no&mca=yes";
 		HttpClient httpclient = HttpClients.createDefault();
-		try {
-			URI weatherApiURI = new URIBuilder(weather).build();
-			HttpGet apiHttpGet = new HttpGet(weatherApiURI);
-			HttpResponse apiResponse = httpclient.execute(apiHttpGet);
-			String jsonResponse = EntityUtils.toString(apiResponse.getEntity(),"UTF-8");
-			
-			JSONParser jsonParser = new JSONParser();
-			
-			JSONArray months = (JSONArray)((JSONObject)((JSONArray)((JSONObject)((JSONObject)jsonParser.parse(jsonResponse)).get("data")).get("ClimateAverages")).get(0)).get("month");
-			
-			Double avgMinTemp = Double.parseDouble(((JSONObject)months.get(month-1)).get("avgMinTemp").toString());
-			
-			System.out.println(avgMinTemp);
-			
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			URI weatherApiURI = new URIBuilder(weather).build();
+//			HttpGet apiHttpGet = new HttpGet(weatherApiURI);
+//			HttpResponse apiResponse = httpclient.execute(apiHttpGet);
+//			String jsonResponse = EntityUtils.toString(apiResponse.getEntity(),"UTF-8");
+//			
+//			JSONParser jsonParser = new JSONParser();
+//			
+//			JSONArray months = (JSONArray)((JSONObject)((JSONArray)((JSONObject)((JSONObject)jsonParser.parse(jsonResponse)).get("data")).get("ClimateAverages")).get(0)).get("month");
+//			
+//			double avgMinTemp = Double.parseDouble(((JSONObject)months.get(month-1)).get("avgMinTemp").toString());
+//			
+//			System.out.println(avgMinTemp);
+//			
+//		} catch (URISyntaxException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (ClientProtocolException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
-		Double effectiveDistance=-1.0;
+
 		if(restTransportation!=null&&restDistance!=null)effectiveDistance=calculateDistance(restTransportation,restDistance);
-		
+				
 		//TODO calculate distance based on coordinates and compare them with the effectiveDistance
 		//TODO query to get the latlong from currentlocation
 		
-		double latitude = 49.4875;
-		double longitude = 8.4660;
-		double maxElevation = 1000;
-		double minElevation = 0;
-		int maxPopulation = 100000000;
-		int minPopulation = 150000;
-		double distanceInKm = 100.0;
+
+
 		String defaultSettlementQuery = 
 				"PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
 				"PREFIX dbp: <http://dbpedia.org/property/>\n" +
 				"PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
 				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"+
+				"PREFIX bif: <bif:>"+
 				"select distinct *\n" + 
 				"Where{{"+
 						"?settlement a dbo:City"+
@@ -141,12 +148,27 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					"?settlement geo:geometry ?point ."+
 					"?settlement rdfs:label ?label ."+
 					"FILTER(LANG(?label) = '' || LANGMATCHES(LANG(?label), 'en'))"+
-					"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
-					"FILTER(?elevation > +"+minElevation+" && ?elevation <"+maxElevation+")"+
-			        "FILTER(bif:st_intersects (?point, 'POINT("+longitude+" "+latitude+")'^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>, "+distanceInKm+")) ." +
+					"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")";
+					if(specification.equals("beach")){
+						maxElevation=30;
+						defaultSettlementQuery=defaultSettlementQuery+"FILTER(?elevation <"+maxElevation+")";
+					}
+					else if(specification.equals("mountain")&&effectiveDistance<2000){
+						minElevation=550;
+						defaultSettlementQuery=defaultSettlementQuery+"FILTER(?elevation >"+minElevation+")";
+					}
+					else if(specification.equals("mountain")&&effectiveDistance>2000){
+						minElevation=1500;
+						defaultSettlementQuery=defaultSettlementQuery+"FILTER(?elevation >"+minElevation+")";
+					}
+					
+					defaultSettlementQuery=defaultSettlementQuery+"FILTER(bif:st_intersects (?point, 'POINT("+longitude+" "+latitude+")"
+							+ "'^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>, "+effectiveDistance+")) ." +
 			    	
 				"}"+
-				"ORDER BY ?population";
+					"ORDER BY ?population";
+		
+
 		
 		String queryString = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
 				"PREFIX rdfs: <https://www.w3.org/2000/01/rdf-schema#>\n" +
