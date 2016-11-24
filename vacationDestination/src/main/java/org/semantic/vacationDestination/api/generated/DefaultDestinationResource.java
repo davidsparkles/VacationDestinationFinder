@@ -103,12 +103,17 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		//TODO calculate distance based on coordinates and compare them with the effectiveDistance
 		//TODO query to get the latlong from currentlocation
 		
-		
+		double latitude = 49.4875;
+		double longitude = 8.4660;
+		double maxElevation = 1000;
+		double minElevation = 0;
+		int maxPopulation = 100000000;
+		int minPopulation = 150000;
+		double distanceInKm = 100.0;
 		String defaultSettlementQuery = 
 				"PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
 				"PREFIX dbp: <http://dbpedia.org/property/>\n" +
 				"PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
-				"PREFIX georss: <http://www.georss.org/georss/>\n" +
 				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"+
 				"select distinct *\n" + 
 				"Where{{"+
@@ -133,10 +138,13 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					"?settlement dbo:populationTotal ?population ."+
 					"?settlement dbo:country ?country ."+
 					"?settlement dbo:elevation ?elevation ."+
-					"?settlement georss:point ?point ."+
+					"?settlement geo:geometry ?point ."+
 					"?settlement rdfs:label ?label ."+
 					"FILTER(LANG(?label) = '' || LANGMATCHES(LANG(?label), 'en'))"+
-					"FILTER (?population > 150000)"+
+					"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
+					"FILTER(?elevation > +"+minElevation+" && ?elevation <"+maxElevation+")"+
+			        "FILTER(bif:st_intersects (?point, 'POINT("+longitude+" "+latitude+")'^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>, "+distanceInKm+")) ." +
+			    	
 				"}"+
 				"ORDER BY ?population";
 		
