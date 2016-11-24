@@ -104,6 +104,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		double longitude = 8.4660;
 		int maxPopulation = 100000000;
 		int minPopulation = 150000;
+		double distanceInKm = 100.0;
 		String defaultSettlementQuery = 
 				"PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
 				"PREFIX dbp: <http://dbpedia.org/property/>\n" +
@@ -136,7 +137,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					"?settlement rdfs:label ?label ."+
 					"FILTER(LANG(?label) = '' || LANGMATCHES(LANG(?label), 'en'))"+
 					"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
-			        "FILTER(bif:st_intersects (?point, 'POINT("+longitude+" "+latitude+")'^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>, 100000)) ." +
+			        "FILTER(bif:st_intersects (?point, 'POINT("+longitude+" "+latitude+")'^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>, "+distanceInKm+")) ." +
 			    	
 				"}"+
 				"ORDER BY ?population";
