@@ -108,6 +108,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		int minPopulation = 150000;
 		double distanceInKm = 100.0;
 		String defaultSettlementQuery = 
+				"PREFIX bif: <bif:>\n" +
 				"PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
 				"PREFIX dbp: <http://dbpedia.org/property/>\n" +
 				"PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
