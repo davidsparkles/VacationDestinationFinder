@@ -73,7 +73,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		if(destination.getTemperature()!=null) restTemperature = destination.getTemperature();
 		if(destination.getTransportation()!=null) restTransportation = destination.getTransportation();
 		if(destination.getLocation()!=null) restLocation = destination.getLocation();
-		if(destination.getSpecification()!=null) restLocation = destination.getSpecification();
+		if(destination.getSpecification()!=null) specification = destination.getSpecification();
 		int month = destination.getMonth();
 		
 		//TODO only testcity
@@ -122,7 +122,6 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				"PREFIX dbp: <http://dbpedia.org/property/>\n" +
 				"PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
 				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"+
-				"PREFIX bif: <bif:>"+
 				"select distinct *\n" + 
 				"Where{{"+
 						"?settlement a dbo:City"+
@@ -151,11 +150,11 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					"FILTER(LANG(?label) = '' || LANGMATCHES(LANG(?label), 'en'))"+
 					"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")";
 					if(specification.equals("beach")){
-						maxElevation=30;
+						maxElevation=25;
 						defaultSettlementQuery=defaultSettlementQuery+"FILTER(?elevation <"+maxElevation+")";
 					}
 					else if(specification.equals("mountain")&&effectiveDistance<2000){
-						minElevation=550;
+						minElevation=500;
 						defaultSettlementQuery=defaultSettlementQuery+"FILTER(?elevation >"+minElevation+")";
 					}
 					else if(specification.equals("mountain")&&effectiveDistance>2000){
@@ -169,21 +168,6 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				"}"+
 					"ORDER BY ?population";
 		
-
-		
-		String queryString = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-				"PREFIX rdfs: <https://www.w3.org/2000/01/rdf-schema#>\n" +
-				"PREFIX onto: <http://www.ontotext.com/proton/protontop#>\n" +
-				"PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
-				"PREFIX dbr: <http://dbpedia.org/resource/>\n" +
-				"select distinct ?Continent ?o\n" + 
-				"where {\n" + 
-					"<http://sws.geonames.org/2873891/> onto:locatedIn ?Continent .\n" +
-//					"<http://dbpedia.org/resource/Earth> rdf:type ?o\n" +
-					"?Continent rdf:type dbo:Continent\n ." +
-					"?Continent dbo:language ?o\n" +
-				"}\n" + 
-				"LIMIT 100";
 		
 		Query query = QueryFactory.create(defaultSettlementQuery);
 		
