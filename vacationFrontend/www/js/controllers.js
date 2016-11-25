@@ -11,6 +11,12 @@ angular.module('starter.controllers', [])
   $scope.temperature = "TMP_ALL";
   $scope.continent = "TMP_ALL";
   $scope.fromwhere = "Anywhere";
+  $scope.countries = [];
+  $scope.sel_country = "";
+  $http.get("data/countries.json")
+    .success(function(json) {
+      $scope.countries = json;
+  });
 
   $scope.resultText = "-";
 
