@@ -2,8 +2,7 @@ angular.module('starter.controllers', [])
 
 .factory('apiendpoint', function() {
     var service={};
-    service.url = "http://example.com";
-    // service.backend = "http://smartbackend.cloudf.de"
+    service.url = "http://localhost:8080";
     return service;
 })
 
@@ -30,8 +29,13 @@ angular.module('starter.controllers', [])
       fromwhere : fromwhere
     };
 
-    // $http.post(apiendpoint.url + '/api/', parameter).success(function(response) {
-    //         console.log('HTTP-Post response: ' + response);
+    $http.post(apiendpoint.url + '/destination', parameter).success(function(response) {
+      console.log(response.data);
+      console.log(response.status);
+    });
+    // $http.get(apiendpoint.url + '/destination').success(function(response) {
+    //         console.log(response.data);
+    //         console.log(response.status);
     // });
     $scope.results = [{name:"Berlin",lat:52.521918,long:13.413215,score:"99%"},{name:"London",lat:51.5073509,long:-0.1277583,score:"80%"}];
 
