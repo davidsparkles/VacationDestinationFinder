@@ -7,7 +7,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
@@ -51,6 +54,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 	}
 
 	/* POST / */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Response post(final Destination destination)
 	{
@@ -64,22 +68,21 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		int minPopulation = 150000;
 		
 		String returnString="";
-		String restDistance="";
-		String restTemperature="";
-		String restTransportation="";
-		String restLocation="";
-		String specification="";
+		String restDistance = null;
+		String restTemperature = null;
+		String restTransportation = null;
+		String restLocation = null;
+		String specification = null;
+		int month = -1;
+		
 		if(destination.getDistance()!=null) restDistance = destination.getDistance();
 		if(destination.getTemperature()!=null) restTemperature = destination.getTemperature();
 		if(destination.getTransportation()!=null) restTransportation = destination.getTransportation();
 		if(destination.getLocation()!=null) restLocation = destination.getLocation();
 		if(destination.getSpecification()!=null) specification = destination.getSpecification();
-		int month = destination.getMonth();
+		if(destination.getMonth()!=null) month = destination.getMonth();
 		
 		//TODO only testcity
-		String city="Stuttgart";
-		String weather ="http://api.worldweatheronline.com/premium/v1/weather.ashx?key=40dd3fd2475942d48a6140651161611&q="+city+"&format=json&fx=no&cc=no&mca=yes";
-		HttpClient httpclient = HttpClients.createDefault();
 //		try {
 //			URI weatherApiURI = new URIBuilder(weather).build();
 //			HttpGet apiHttpGet = new HttpGet(weatherApiURI);
@@ -113,8 +116,6 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				
 		//TODO calculate distance based on coordinates and compare them with the effectiveDistance
 		//TODO query to get the latlong from currentlocation
-		
-
 
 		String defaultSettlementQuery = 
 				"PREFIX bif: <bif:>\n" +
@@ -147,15 +148,20 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					"?settlement dbo:elevation ?elevation ."+
 					"?settlement geo:geometry ?point ."+
 					"?settlement rdfs:label ?label ."+
-					"FILTER(LANG(?label) = '' || LANGMATCHES(LANG(?label), 'en'))"+
-					"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")";
+					"FILTER(LANG(?label) = '' || LANGMATCHES(LANG(?label), 'en'))";
+					
 					if(specification.equals("beach")){
 						maxElevation=25;
-						defaultSettlementQuery=defaultSettlementQuery+"FILTER(?elevation <"+maxElevation+")";
+						defaultSettlementQuery=defaultSettlementQuery+
+								"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
+								"FILTER(?elevation <"+maxElevation+")";
 					}
 					else if(specification.equals("mountain")&&effectiveDistance<2000){
-						minElevation=500;
-						defaultSettlementQuery=defaultSettlementQuery+"FILTER(?elevation >"+minElevation+")";
+						minElevation=550;
+						minPopulation=100000;
+						defaultSettlementQuery=defaultSettlementQuery+
+								"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
+								"FILTER(?elevation >"+minElevation+")";
 					}
 					else if(specification.equals("mountain")&&effectiveDistance>2000){
 						minElevation=1500;
@@ -168,40 +174,91 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				"}"+
 					"ORDER BY ?population";
 		
-		
 		Query query = QueryFactory.create(defaultSettlementQuery);
 		
 		String serviceStringDBpedia = "http://dbpedia.org/sparql";
 		String serviceString = "http://factforge.net/sparql";
 		
 		QueryExecution qexec = QueryExecutionFactory.sparqlService(serviceStringDBpedia, query);
-		
+		JSONObject returnObject = new JSONObject();
+		ArrayList<String> possibleCities = new ArrayList<>(); 
 		try{
 			ResultSet results = qexec.execSelect();
 			while(results.hasNext()){
+				JSONArray cityArray = new JSONArray();
+				JSONObject latCoord = new JSONObject();
+				JSONObject longCoord = new JSONObject();
+				String label="";
 				QuerySolution result = results.next();
 				List<String> variables = results.getResultVars();
 				for(int i =0;i< results.getResultVars().size();i++){
+					String value = result.get(variables.get(i)).toString();
+					if(variables.get(i).equals("label")){
+						label= value.substring(0, value.indexOf("@"));
+					}else if(variables.get(i).equals("point")){
+						Pattern p = Pattern.compile("\\d+\\.\\d+\\s\\d+\\d+");
+						Matcher m = p.matcher(result.get(variables.get(i)).toString());
+						if(m.find()){
+							String latLong= m.group(0);
+							latCoord.put("lat", latLong.substring(0, latLong.indexOf(" ")));
+							longCoord.put("long", latLong.substring(latLong.indexOf(" ")));
+						}
+					}
 					returnString = returnString+ "\n"+variables.get(i)+" : "+result.get(variables.get(i));
 					System.out.println(variables.get(i)+" : "+result.get(variables.get(i)));					
 				}
+				cityArray.add(latCoord);
+				cityArray.add(longCoord);
+				returnObject.put(label, cityArray);
+				possibleCities.add(label);
 			}
 		} finally {
 			qexec.close();
 		}
 		
-		//TODO build JSON return
-		JSONObject returnObject = new JSONObject();
-		JSONArray cityArray = new JSONArray();
-		JSONObject latCoord = new JSONObject();
-		JSONObject longCoord = new JSONObject();
+		if(restTemperature!=null&&month!=-1){
+			HttpClient httpclient = HttpClients.createDefault();
+
+			for(String cityName:possibleCities){
+				try {
+					String fullName=cityName;
+					if(cityName.contains("("))cityName=cityName.substring(0, cityName.indexOf("(")-1);
+					if(cityName.contains(","))cityName=cityName.substring(0, cityName.indexOf(","));
+					String weather ="http://api.worldweatheronline.com/premium/v1/weather.ashx?key=40dd3fd2475942d48a6140651161611&q="+cityName+"&format=json&fx=no&cc=no&mca=yes";
+					URI weatherApiURI = new URIBuilder(weather).build();
+					HttpGet apiHttpGet = new HttpGet(weatherApiURI);
+					HttpResponse apiResponse = httpclient.execute(apiHttpGet);
+					String jsonResponse = EntityUtils.toString(apiResponse.getEntity(),"UTF-8");
+
+					JSONParser jsonParser = new JSONParser();
+
+					JSONArray months = (JSONArray)((JSONObject)((JSONArray)((JSONObject)((JSONObject)jsonParser.parse(jsonResponse)).get("data")).get("ClimateAverages")).get(0)).get("month");
+
+					double avgMinTemp = Double.parseDouble(((JSONObject)months.get(month-1)).get("avgMinTemp").toString());
+
+					if((Double.parseDouble(restTemperature))>avgMinTemp){
+						returnObject.remove(fullName);
+					}
+
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ClientProtocolException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
 		
-		cityArray.add(latCoord);
-		cityArray.add(longCoord);
-		returnObject.put(city, cityArray);
-		
-		return Response.ok()
-				.entity(returnString).build();
+		return Response.ok().header("Content-Type", "application/json")
+				.entity(returnObject).build();
 	}
 
 	private Double calculateDistance(String restTransportation, String restDistance) {
