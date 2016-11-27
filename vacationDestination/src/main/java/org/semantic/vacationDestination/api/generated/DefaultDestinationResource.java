@@ -82,40 +82,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		if(destination.getSpecification()!=null) specification = destination.getSpecification();
 		if(destination.getMonth()!=null) month = destination.getMonth();
 		
-		//TODO only testcity
-//		try {
-//			URI weatherApiURI = new URIBuilder(weather).build();
-//			HttpGet apiHttpGet = new HttpGet(weatherApiURI);
-//			HttpResponse apiResponse = httpclient.execute(apiHttpGet);
-//			String jsonResponse = EntityUtils.toString(apiResponse.getEntity(),"UTF-8");
-//			
-//			JSONParser jsonParser = new JSONParser();
-//			
-//			JSONArray months = (JSONArray)((JSONObject)((JSONArray)((JSONObject)((JSONObject)jsonParser.parse(jsonResponse)).get("data")).get("ClimateAverages")).get(0)).get("month");
-//			
-//			double avgMinTemp = Double.parseDouble(((JSONObject)months.get(month-1)).get("avgMinTemp").toString());
-//			
-//			System.out.println(avgMinTemp);
-//			
-//		} catch (URISyntaxException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ClientProtocolException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-
 		if(restTransportation!=null&&restDistance!=null)effectiveDistance=calculateDistance(restTransportation,restDistance);
-				
-		//TODO calculate distance based on coordinates and compare them with the effectiveDistance
-		//TODO query to get the latlong from currentlocation
 		
 		String settlementBasis =
 				"{"+
@@ -162,11 +129,11 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 								"FILTER(?elevation <"+maxElevation+")";
 					}
 					else if(specification.equals("mountain")&&effectiveDistance<2000){
-						minElevation=550;
-						minPopulation=100000;
-						defaultSettlementQuery=defaultSettlementQuery+
-								"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
-								"FILTER(?elevation >"+minElevation+")";
+						//minElevation=550;
+						minPopulation=10000;
+//						defaultSettlementQuery=defaultSettlementQuery+
+//								"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
+//								"FILTER(?elevation >"+minElevation+")";
 								
 					}
 					else if(specification.equals("mountain")&&effectiveDistance>2000){
@@ -222,7 +189,8 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 			qexec.close();
 		}
 		
-		if(restTemperature!=null&&month!=-1){
+		boolean getTemp=false;
+		if(restTemperature!=null&&month!=-1&&getTemp){
 			HttpClient httpclient = HttpClients.createDefault();
 
 			for(String cityName:possibleCities){
