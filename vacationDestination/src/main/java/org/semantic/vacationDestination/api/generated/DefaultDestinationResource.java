@@ -132,17 +132,19 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 
 		String settlementBasisSki = 
 				"?countryList skos:broader dbc:Ski_areas_and_resorts_by_country ."+
-				"?settlement dcterms:subject ?countryList";
+				"?settlement dct:subject ?countryList";
 
+		if(specification.equals("mountain"))settlementBasis=settlementBasisSki;
 		
 		String defaultSettlementQuery = 
 				"PREFIX bif: <bif:>\n" +
-				"PREFIX dct: <http://purl.org/dc/terms/\n>"+
+				"PREFIX dct: <http://purl.org/dc/terms/>\n"+
 				"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n"+
 				"PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
 				"PREFIX dbp: <http://dbpedia.org/property/>\n" +
 				"PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
 				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"+
+				"PREFIX dbc: <http://dbpedia.org/page/Category:>\n" +
 				"select distinct *\n" + 
 				"Where{"+
 					settlementBasis+
@@ -165,6 +167,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 						defaultSettlementQuery=defaultSettlementQuery+
 								"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
 								"FILTER(?elevation >"+minElevation+")";
+								
 					}
 					else if(specification.equals("mountain")&&effectiveDistance>2000){
 						minElevation=1500;
