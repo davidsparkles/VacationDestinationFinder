@@ -188,9 +188,8 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		} finally {
 			qexec.close();
 		}
-		
-		boolean getTemp=false;
-		if(restTemperature!=null&&month!=-1&&getTemp){
+
+		if(restTemperature!=null&&month!=-1){
 			HttpClient httpclient = HttpClients.createDefault();
 
 			for(String cityName:possibleCities){
