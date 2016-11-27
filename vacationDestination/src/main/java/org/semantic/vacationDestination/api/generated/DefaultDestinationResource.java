@@ -116,33 +116,36 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				
 		//TODO calculate distance based on coordinates and compare them with the effectiveDistance
 		//TODO query to get the latlong from currentlocation
+		
+		String settlementBasis =
+				"{"+
+					"?settlement a dbo:City"+
+				"}"+
+				"UNION"+
+				"{"+
+					"?settlement a dbo:Town"+
+				"}"+
+					"UNION"+
+				"{"+
+					"?settlement a dbo:Village"+
+				"}";
 
+		String settlementBasisSki = 
+				"?countryList skos:broader dbc:Ski_areas_and_resorts_by_country ."+
+				"?settlement dcterms:subject ?countryList";
+
+		
 		String defaultSettlementQuery = 
 				"PREFIX bif: <bif:>\n" +
+				"PREFIX dct: <http://purl.org/dc/terms/\n>"+
+				"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n"+
 				"PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
 				"PREFIX dbp: <http://dbpedia.org/property/>\n" +
 				"PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
 				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"+
 				"select distinct *\n" + 
-				"Where{{"+
-						"?settlement a dbo:City"+
-					"}"+
-					"UNION"+
-					"{"+
-						"?settlement a dbo:Town"+
-					"}"+
-						"UNION"+
-					"{"+
-						"?settlement a dbo:Village"+
-					"}"+
-						"UNION"+
-					"{"+
-						"?settlement a dbo:CityDistrict"+
-					"}"+
-						"UNION"+
-					"{"+
-						"?settlement a dbo:HistoricalSettlement"+
-					"}"+
+				"Where{"+
+					settlementBasis+
 					"?settlement dbo:populationTotal ?population ."+
 					"?settlement dbo:country ?country ."+
 					"?settlement dbo:elevation ?elevation ."+
