@@ -132,7 +132,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 
 		String settlementBasisSki = 
 				"?countryList skos:broader dbc:Ski_areas_and_resorts_by_country ."+
-				"?settlement dct:subject ?countryList";
+				"?settlement dct:subject ?countryList.";
 
 		if(specification.equals("mountain"))settlementBasis=settlementBasisSki;
 		
