@@ -117,9 +117,9 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				"Where{"+
 					settlementBasis+
 					"?settlement dbo:populationTotal ?population ."+
-					"?settlement dbo:country ?country ."+
-					"?settlement dbo:elevation ?elevation ."+
-					"?settlement geo:geometry ?point ."+
+					"OPTIONAL {?settlement dbo:country ?country} ."+
+					"OPTIONAL {?settlement dbo:elevation ?elevation} ."+
+					"OPTIONAL {?settlement geo:geometry ?point }."+
 					"?settlement rdfs:label ?label ."+
 					"FILTER(LANG(?label) = '' || LANGMATCHES(LANG(?label), 'en'))";
 					
