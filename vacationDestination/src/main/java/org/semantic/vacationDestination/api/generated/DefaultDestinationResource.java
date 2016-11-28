@@ -179,8 +179,8 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 						Matcher m = p.matcher(result.get(variables.get(i)).toString());
 						if(m.find()){
 							String latLong= m.group(0);
-							latCoord.put("lat", latLong.substring(0, latLong.indexOf(" ")));
-							longCoord.put("long", latLong.substring(latLong.indexOf(" ")+1));
+							longCoord.put("long", latLong.substring(0, latLong.indexOf(" ")));
+							latCoord.put("lat", latLong.substring(latLong.indexOf(" ")+1));
 						}
 					}
 					returnString = returnString+ "\n"+variables.get(i)+" : "+result.get(variables.get(i));
