@@ -38,7 +38,8 @@ angular.module('starter.controllers', [])
     // parameter = {"month":"8","distance":"12h","transportation":"car","specification":"beach","temperature":"18"};
 
     $http.post(apiendpoint.url + '/destination', parameter).success(function(response) {
-      for(var city in response) $scope.results = $scope.results.concat([{name:city,long:response[city][0].lat,lat:response[city][1].long}]);
+      $scope.results = [];
+      for(var city in response) $scope.results = $scope.results.concat([{name:city,lat:response[city][0].lat,long:response[city][1].long}]);
       console.log($scope.results);
     });
     // $http.get(apiendpoint.url + '/destination').success(function(response) {
