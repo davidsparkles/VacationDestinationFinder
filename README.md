@@ -9,6 +9,8 @@ Then you are ready to execute the class files and explore the world of linked op
 
 Have fun!
 
+## Backend
+
 After Downloading:
 ```
 mvn clean install
@@ -16,6 +18,19 @@ mvn eclipse:m2eclipse
 ```
 and then import the project
 
+## Frontend
+
+
+Install ionic framework [https://ionicframework.com/]:
+```
+npm install -g cordova ionic
+```
+In the 'vacationFrontend' folder:
+```
+npm install
+ionic serve
+```
+Your internet browser should open.
 
 #Sample Request
 
