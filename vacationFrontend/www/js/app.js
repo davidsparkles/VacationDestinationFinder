@@ -43,7 +43,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
   })
 
   .state('app.map', {
-      url: '/map/:name/:lat/:long',
+      url: '/map/:lat/:long',
       views: {
         'menuContent': {
           templateUrl: 'html/map.html',

@@ -7,43 +7,51 @@ angular.module('starter.controllers', [])
 })
 
 .controller('SearchCtrl', function($scope, $state, $http, apiendpoint) {
-  $scope.temperature = "TMP_ALL";
-  $scope.continent = "TMP_ALL";
-  $scope.fromwhere = "Anywhere";
-  $scope.countries = [];
-  $scope.sel_country = "";
-  $http.get("data/countries.json")
-    .success(function(json) {
-      $scope.countries = json;
-  });
+  $scope.month = 8;
+  $scope.distance = "12h";
+  $scope.transportation = "car";
+  $scope.specification = "beach";
+  $scope.temperature = "18";
 
-  $scope.resultText = "-";
+  // $scope.continent = "TMP_ALL";
+  // $scope.fromwhere = "Anywhere";
+  // $scope.countries = [];
+  // $scope.sel_country = "";
+  // $http.get("data/countries.json")
+  //   .success(function(json) {
+  //     $scope.countries = json;
+  // });
 
   $scope.results = [];
 
-  $scope.search = function(temperature,continent,fromwhere) {
-    console.log(temperature + ', ' + continent + ', ' + fromwhere);
+  $scope.search = function(month,distance,transportation,specification,temperature) {
     var parameter = {
-      temperature : temperature,
-      continent : continent,
-      fromwhere : fromwhere
+      "month":month,
+      "distance":distance,
+      "transportation":transportation,
+      "specification":specification,
+      "temperature":temperature
     };
 
+    console.log(parameter);
+
+    // parameter = {"month":"8","distance":"12h","transportation":"car","specification":"beach","temperature":"18"};
+
     $http.post(apiendpoint.url + '/destination', parameter).success(function(response) {
-      console.log(response.data);
-      console.log(response.status);
+      for(var city in response) $scope.results = $scope.results.concat([{name:city,long:response[city][0].lat,lat:response[city][1].long}]);
+      console.log($scope.results);
     });
     // $http.get(apiendpoint.url + '/destination').success(function(response) {
     //         console.log(response.data);
     //         console.log(response.status);
     // });
-    $scope.results = [{name:"Berlin",lat:52.521918,long:13.413215,score:"99%"},{name:"London",lat:51.5073509,long:-0.1277583,score:"80%"}];
+    // $scope.results = [{name:"Berlin",lat:52.521918,long:13.413215,score:"99%"},{name:"London",lat:51.5073509,long:-0.1277583,score:"80%"}];
 
   }
 
-  $scope.openMap = function(name, lat, long){
-    console.log("name: " + name);
-    $state.go('app.map',{name: name, lat: lat, long: long});
+  $scope.openMap = function(lat, long){
+    console.log("lat: " + lat + " long: " + long);
+    $state.go('app.map',{lat: lat, long: long});
   }
 
 })
