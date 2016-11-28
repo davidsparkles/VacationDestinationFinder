@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -111,7 +112,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				"PREFIX dbp: <http://dbpedia.org/property/>\n" +
 				"PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
 				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"+
-				"PREFIX dbc: <http://dbpedia.org/page/Category:>\n" +
+				"PREFIX dbc: <http://dbpedia.org/resource/Category:>\n" +
 				"select distinct *\n" + 
 				"Where{"+
 					settlementBasis+
@@ -145,7 +146,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 							+ "'^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>, "+effectiveDistance+")) ." +
 			    	
 				"}"+
-					"ORDER BY ?population";
+					"ORDER BY DESC (?population)";
 		
 		Query query = QueryFactory.create(defaultSettlementQuery);
 		
@@ -158,6 +159,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		try{
 			ResultSet results = qexec.execSelect();
 			while(results.hasNext()){
+				if(possibleCities.size()>25)break;
 				JSONArray cityArray = new JSONArray();
 				JSONObject latCoord = new JSONObject();
 				JSONObject longCoord = new JSONObject();
@@ -169,7 +171,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					if(variables.get(i).equals("label")){
 						label= value.substring(0, value.indexOf("@"));
 					}else if(variables.get(i).equals("point")){
-						Pattern p = Pattern.compile("\\d+\\.\\d+\\s\\d+\\.\\d+");
+						Pattern p = Pattern.compile("\\d+(\\.\\d+)?\\s\\d+(\\.\\d+)?");
 						Matcher m = p.matcher(result.get(variables.get(i)).toString());
 						if(m.find()){
 							String latLong= m.group(0);
@@ -197,6 +199,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					String fullName=cityName;
 					if(cityName.contains("("))cityName=cityName.substring(0, cityName.indexOf("(")-1);
 					if(cityName.contains(","))cityName=cityName.substring(0, cityName.indexOf(","));
+					cityName=URLEncoder.encode(cityName, "UTF-8");
 					String weather ="http://api.worldweatheronline.com/premium/v1/weather.ashx?key=40dd3fd2475942d48a6140651161611&q="+cityName+"&format=json&fx=no&cc=no&mca=yes";
 					URI weatherApiURI = new URIBuilder(weather).build();
 					HttpGet apiHttpGet = new HttpGet(weatherApiURI);
@@ -205,10 +208,16 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 
 					JSONParser jsonParser = new JSONParser();
 
-					JSONArray months = (JSONArray)((JSONObject)((JSONArray)((JSONObject)((JSONObject)jsonParser.parse(jsonResponse)).get("data")).get("ClimateAverages")).get(0)).get("month");
+					double avgMinTemp = 0.0;
+					
+					if(jsonResponse.contains("error")){
+						avgMinTemp=-100.0;
+					}else{
+						JSONArray months = (JSONArray)((JSONObject)((JSONArray)((JSONObject)((JSONObject)jsonParser.parse(jsonResponse)).get("data")).get("ClimateAverages")).get(0)).get("month");
 
-					double avgMinTemp = Double.parseDouble(((JSONObject)months.get(month-1)).get("avgMinTemp").toString());
-
+						avgMinTemp = Double.parseDouble(((JSONObject)months.get(month-1)).get("avgMinTemp").toString());
+					}
+					
 					if((Double.parseDouble(restTemperature))>avgMinTemp){
 						returnObject.remove(fullName);
 					}
