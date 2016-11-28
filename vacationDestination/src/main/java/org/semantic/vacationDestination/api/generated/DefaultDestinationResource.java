@@ -102,7 +102,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				"?countryList skos:broader dbc:Ski_areas_and_resorts_by_country ."+
 				"?settlement dct:subject ?countryList.";
 
-		if(specification.equals("mountain"))settlementBasis=settlementBasisSki;
+		if(specification!=null&&specification.equals("mountain"))settlementBasis=settlementBasisSki;
 		
 		String defaultSettlementQuery = 
 				"PREFIX bif: <bif:>\n" +
@@ -123,13 +123,13 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					"?settlement rdfs:label ?label ."+
 					"FILTER(LANG(?label) = '' || LANGMATCHES(LANG(?label), 'en'))";
 					
-					if(specification.equals("beach")){
+					if(specification!=null&&specification.equals("beach")){
 						maxElevation=25;
 						defaultSettlementQuery=defaultSettlementQuery+
 								"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
 								"FILTER(?elevation <"+maxElevation+")";
 					}
-					else if(specification.equals("mountain")&&effectiveDistance<2000){
+					else if(specification!=null&&specification.equals("mountain")&&effectiveDistance<2000){
 						//minElevation=550;
 						minPopulation=10000;
 //						defaultSettlementQuery=defaultSettlementQuery+
@@ -137,9 +137,13 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 //								"FILTER(?elevation >"+minElevation+")";
 								
 					}
-					else if(specification.equals("mountain")&&effectiveDistance>2000){
+					else if(specification!=null&&specification.equals("mountain")&&effectiveDistance>2000){
 						minElevation=1500;
 						defaultSettlementQuery=defaultSettlementQuery+"FILTER(?elevation >"+minElevation+")";
+					}
+					else{
+						defaultSettlementQuery=defaultSettlementQuery+
+								"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")";
 					}
 					
 					defaultSettlementQuery=defaultSettlementQuery+"FILTER(bif:st_intersects (?point, 'POINT("+longitude+" "+latitude+")"
