@@ -16,6 +16,7 @@
             <label id="selectMonth" class="item item-select">
                 <span class="input-label"></span>
                 <select ng-model="month" ng-init="" name="dropdown_month" required>
+                    <option value=0 ng-selected="true">Any month</option>
                     <option value=1>January</option>
                     <option value=2>February</option>
                     <option value=3>March</option>
@@ -23,7 +24,7 @@
                     <option value=5>May</option>
                     <option value=6>June</option>
                     <option value=7>July</option>
-                    <option value=8 ng-selected="true">August</option>
+                    <option value=8>August</option>
                     <option value=9>September</option>
                     <option value=10>October</option>
                     <option value=11>November</option>
@@ -63,7 +64,8 @@
             <label id="selectSpecification" class="item item-select">
                 <span class="input-label"></span>
                 <select ng-model="specification" ng-init="" name="dropdown_specification" required>
-                    <option value="beach" ng-selected="true">Beach</option>
+                    <option value=0 ng-selected="true">Any specification</option>
+                    <option value="beach">Beach</option>
                     <option value="mountain">Mountain</option>
                 </select>
             </label>
@@ -72,12 +74,13 @@
             <label id="selectTemperature" class="item item-select">
                 <span class="input-label"></span>
                 <select ng-model="temperature" ng-init="" name="dropdown_temperature" required>
+                    <option value="" ng-selected="true">Any temperature</option>
                     <option value="0">0°C</option>
                     <option value="4">4°C</option>
                     <option value="8">8°C</option>
                     <option value="10">10°C</option>
                     <option value="14">14°C</option>
-                    <option value="18" ng-selected="true">18°C</option>
+                    <option value="18">18°C</option>
                     <option value="22">22°C</option>
                     <option value="26">26°C</option>
                     <option value="30">30°C</option>

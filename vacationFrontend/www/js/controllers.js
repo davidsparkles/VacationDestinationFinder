@@ -7,11 +7,11 @@ angular.module('starter.controllers', [])
 })
 
 .controller('SearchCtrl', function($scope, $state, $http, apiendpoint) {
-  $scope.month = 8;
+  $scope.month = 0;
   $scope.distance = "12h";
   $scope.transportation = "car";
-  $scope.specification = "beach";
-  $scope.temperature = "18";
+  $scope.specification = "";
+  $scope.temperature = "";
 
   // $scope.continent = "TMP_ALL";
   // $scope.fromwhere = "Anywhere";
@@ -26,19 +26,20 @@ angular.module('starter.controllers', [])
 
   $scope.search = function(month,distance,transportation,specification,temperature) {
     var parameter = {
-      "month":month,
       "distance":distance,
-      "transportation":transportation,
-      "specification":specification,
-      "temperature":temperature
+      "transportation":transportation
     };
+    if(month != 0) parameter.month = month;
+    if(specification != "") parameter.specification = specification;
+    if(temperature != "") parameter.temperature = temperature;
 
     console.log(parameter);
 
     // parameter = {"month":"8","distance":"12h","transportation":"car","specification":"beach","temperature":"18"};
 
     $http.post(apiendpoint.url + '/destination', parameter).success(function(response) {
-      for(var city in response) $scope.results = $scope.results.concat([{name:city,long:response[city][0].lat,lat:response[city][1].long}]);
+      $scope.results = [];
+      for(var city in response) $scope.results = $scope.results.concat([{name:city,lat:response[city][0].lat,long:response[city][1].long}]);
       console.log($scope.results);
     });
     // $http.get(apiendpoint.url + '/destination').success(function(response) {
