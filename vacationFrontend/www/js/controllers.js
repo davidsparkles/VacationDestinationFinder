@@ -7,11 +7,11 @@ angular.module('starter.controllers', [])
 })
 
 .controller('SearchCtrl', function($scope, $state, $http, apiendpoint) {
-  $scope.month = 8;
+  $scope.month = 0;
   $scope.distance = "12h";
   $scope.transportation = "car";
-  $scope.specification = "beach";
-  $scope.temperature = "18";
+  $scope.specification = "";
+  $scope.temperature = "";
 
   // $scope.continent = "TMP_ALL";
   // $scope.fromwhere = "Anywhere";
@@ -26,12 +26,12 @@ angular.module('starter.controllers', [])
 
   $scope.search = function(month,distance,transportation,specification,temperature) {
     var parameter = {
-      "month":month,
       "distance":distance,
-      "transportation":transportation,
-      "specification":specification,
-      "temperature":temperature
+      "transportation":transportation
     };
+    if(month != 0) parameter.month = month;
+    if(specification != "") parameter.specification = specification;
+    if(temperature != "") parameter.temperature = temperature;
 
     console.log(parameter);
 
