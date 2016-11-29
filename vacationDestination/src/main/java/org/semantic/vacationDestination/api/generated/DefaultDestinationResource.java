@@ -171,7 +171,8 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				QuerySolution result = results.next();
 				List<String> variables = results.getResultVars();
 				for(int i =0;i< results.getResultVars().size();i++){
-					String value = result.get(variables.get(i)).toString();
+					String value="";
+					if(result.contains(variables.get(i)))value = result.get(variables.get(i)).toString();
 					if(variables.get(i).equals("label")){
 						label= value.substring(0, value.indexOf("@"));
 					}else if(variables.get(i).equals("point")){
@@ -203,6 +204,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					String fullName=cityName;
 					if(cityName.contains("("))cityName=cityName.substring(0, cityName.indexOf("(")-1);
 					if(cityName.contains(","))cityName=cityName.substring(0, cityName.indexOf(","));
+					if(cityName.contains("Metropolitan City of"))cityName=cityName.substring(cityName.indexOf("of")+3);
 					cityName=URLEncoder.encode(cityName, "UTF-8");
 					String weather ="http://api.worldweatheronline.com/premium/v1/weather.ashx?key=40dd3fd2475942d48a6140651161611&q="+cityName+"&format=json&fx=no&cc=no&mca=yes";
 					URI weatherApiURI = new URIBuilder(weather).build();
