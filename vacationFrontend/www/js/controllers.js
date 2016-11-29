@@ -6,7 +6,19 @@ angular.module('starter.controllers', [])
     return service;
 })
 
-.controller('SearchCtrl', function($scope, $state, $http, apiendpoint) {
+.factory('locations', function(){
+  var service = {}; var locations;
+  service.locations = locations;
+  service.setLocations = function(data){
+    locations = data;
+  }
+  service.getLocations = function(){
+    return locations;
+  }
+  return service;
+})
+
+.controller('SearchCtrl', function($scope, $state, $http, apiendpoint, locations) {
   $scope.month = 0;
   $scope.distance = "12h";
   $scope.transportation = "car";
@@ -41,6 +53,10 @@ angular.module('starter.controllers', [])
       $scope.results = [];
       for(var city in response) $scope.results = $scope.results.concat([{name:city,lat:response[city][0].lat,long:response[city][1].long}]);
       console.log($scope.results);
+      locations.setLocations($scope.results);
+      console.log("read from factory");
+      console.log(locations.getLocations());
+      $scope.openMap()
     });
     // $http.get(apiendpoint.url + '/destination').success(function(response) {
     //         console.log(response.data);
@@ -50,29 +66,51 @@ angular.module('starter.controllers', [])
 
   }
 
-  $scope.openMap = function(lat, long){
-    console.log("lat: " + lat + " long: " + long);
-    $state.go('app.map',{lat: lat, long: long});
+  $scope.openMap = function(){
+    $state.go('app.map');
   }
 
 })
 
-.controller('MapCtrl', function($scope, $state, $stateParams) {
+.controller('MapCtrl', function($scope, $state, $stateParams, locations) {
   // var options = {timeout: 10000, enableHighAccuracy: true};
 
   // $cordovaGeolocation.getCurrentPosition(options).then(function(position){
 
     // var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-    console.log("stateParams: " + $stateParams.name + " " + $stateParams.lat + " "  + $stateParams.long);
+    // console.log("stateParams: " + $stateParams.name + " " + $stateParams.lat + " "  + $stateParams.long);
+
     var mapOptions = {
       center: {lat: Number($stateParams.lat), lng: Number($stateParams.long)},
       // center: latLng,
-      zoom: 13,
+      zoom: 1,
       // mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
     $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+    var locations = locations.getLocations();
+    console.log(locations);
+
+    var marker, i;
+
+    for (i = 0; i < locations.length; i++) {
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i]["lat"], locations[i]["long"]),
+        map: $scope.map
+      });
+
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          var infowindow = new google.maps.InfoWindow();
+          infowindow.setContent(locations[i]["name"]);
+          infowindow.open($scope.map, marker);
+        }
+      })(marker, i));
+    }
+
 
   // }, function(error){
   //   console.log("Could not get location");
