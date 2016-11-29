@@ -176,7 +176,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					if(variables.get(i).equals("label")){
 						label= value.substring(0, value.indexOf("@"));
 					}else if(variables.get(i).equals("point")){
-						Pattern p = Pattern.compile("\\d+(\\.\\d+)?\\s\\d+(\\.\\d+)?");
+						Pattern p = Pattern.compile("-?\\d+(\\.\\d+)?\\s-?\\d+(\\.\\d+)?");
 						Matcher m = p.matcher(result.get(variables.get(i)).toString());
 						if(m.find()){
 							String latLong= m.group(0);
