@@ -29,6 +29,7 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.sparql.function.library.max;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -60,13 +61,14 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 	public Response post(final Destination destination)
 	{
 		
+		int maxCities = 50;
 		double latitude = 49.4875;
 		double longitude = 8.4660;
 		double maxElevation = 0;
 		double minElevation = 0;
-		double effectiveDistance=1000.0;
+		double effectiveDistance=-1;
 		int maxPopulation = 100000000;
-		int minPopulation = 150000;
+		int minPopulation = 0;
 		
 		String returnString="";
 		String restDistance = null;
@@ -75,6 +77,8 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		String restLocation = null;
 		String specification = null;
 		int month = -1;
+		String population = null;
+		String country = null;
 		
 		if(destination.getDistance()!=null) restDistance = destination.getDistance();
 		if(destination.getTemperature()!=null) restTemperature = destination.getTemperature();
@@ -82,8 +86,21 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		if(destination.getLocation()!=null) restLocation = destination.getLocation();
 		if(destination.getSpecification()!=null) specification = destination.getSpecification();
 		if(destination.getMonth()!=null) month = destination.getMonth();
+		if(destination.getPopulation()!=null)population = destination.getPopulation();
+		if(destination.getCountry()!=null)country = destination.getCountry();
 		
 		if(restTransportation!=null&&restDistance!=null)effectiveDistance=calculateDistance(restTransportation,restDistance);
+		
+		if(population!=null&&population.equals("small")){
+			maxPopulation=80000;
+		}
+		else if(population!=null&&population.equals("medium")){
+			minPopulation=80000;
+			maxPopulation=1000000;
+		}
+		else if(population!=null&&population.equals("large")){
+			minPopulation=1000000;
+		}
 		
 		String settlementBasis =
 				"{"+
@@ -116,22 +133,21 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				"select distinct *\n" + 
 				"Where{"+
 					settlementBasis+
-					"?settlement dbo:populationTotal ?population ."+
-					"OPTIONAL {?settlement dbo:country ?country} ."+
-					"OPTIONAL {?settlement dbo:elevation ?elevation} ."+
 					"?settlement geo:geometry ?point ."+
+					"OPTIONAL {?settlement dbo:elevation ?elevation} ."+
+					"OPTIONAL {?settlement dbo:country ?country} ."+
+					"?settlement dbo:populationTotal ?population ."+
 					"?settlement rdfs:label ?label ."+
 					"FILTER(LANG(?label) = '' || LANGMATCHES(LANG(?label), 'en'))";
 					
 					if(specification!=null&&specification.equals("beach")){
 						maxElevation=25;
 						defaultSettlementQuery=defaultSettlementQuery+
-								"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
 								"FILTER(?elevation <"+maxElevation+")";
 					}
 					else if(specification!=null&&specification.equals("mountain")&&effectiveDistance<2000){
 						//minElevation=550;
-						minPopulation=10000;
+						//minPopulation=10000;
 //						defaultSettlementQuery=defaultSettlementQuery+
 //								"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")"+
 //								"FILTER(?elevation >"+minElevation+")";
@@ -139,16 +155,22 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					}
 					else if(specification!=null&&specification.equals("mountain")&&effectiveDistance>2000){
 						minElevation=1500;
-						defaultSettlementQuery=defaultSettlementQuery+"FILTER(?elevation >"+minElevation+")";
+//						defaultSettlementQuery=defaultSettlementQuery+"FILTER(?elevation >"+minElevation+")";
 					}
-					else{
+					if (population!=null){
 						defaultSettlementQuery=defaultSettlementQuery+
 								"FILTER(?population > +"+minPopulation+" && ?population <"+maxPopulation+")";
 					}
-					
-					defaultSettlementQuery=defaultSettlementQuery+"FILTER(bif:st_intersects (?point, 'POINT("+longitude+" "+latitude+")"
-							+ "'^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>, "+effectiveDistance+")) ." +
-			    	
+					if(country!=null){
+						defaultSettlementQuery=defaultSettlementQuery+
+								"FILTER regex(str(?country), '"+country+"')";
+					}
+					if(effectiveDistance!=-1){
+						defaultSettlementQuery=defaultSettlementQuery+"FILTER(bif:st_intersects (?point, 'POINT("+longitude+" "+latitude+")"
+								+ "'^^<http://www.openlinksw.com/schemas/virtrdf#Geometry>, "+effectiveDistance+")) .";
+					}
+
+					defaultSettlementQuery=defaultSettlementQuery+
 				"}"+
 					"ORDER BY DESC (?population)";
 		
@@ -163,7 +185,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 		try{
 			ResultSet results = qexec.execSelect();
 			while(results.hasNext()){
-				if(possibleCities.size()>25)break;
+				if(possibleCities.size()>maxCities)break;
 				JSONArray cityArray = new JSONArray();
 				JSONObject latCoord = new JSONObject();
 				JSONObject longCoord = new JSONObject();
@@ -175,6 +197,7 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 					if(result.contains(variables.get(i)))value = result.get(variables.get(i)).toString();
 					if(variables.get(i).equals("label")){
 						label= value.substring(0, value.indexOf("@"));
+						if(possibleCities.contains("label"))continue;
 					}else if(variables.get(i).equals("point")){
 						Pattern p = Pattern.compile("-?\\d+(\\.\\d+)?\\s-?\\d+(\\.\\d+)?");
 						Matcher m = p.matcher(result.get(variables.get(i)).toString());

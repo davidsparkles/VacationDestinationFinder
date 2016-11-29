@@ -27,6 +27,14 @@
     "specification":
     {
       "type":"string"
-    }
+    },
+    "population":
+    {
+      "type":"string"
+    },
+    "country":
+    {
+      "type":"string"
+    }    
   }
 }
