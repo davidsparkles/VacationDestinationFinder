@@ -23,11 +23,12 @@ and then import the project
 
 Install ionic framework [https://ionicframework.com/]:
 ```
-npm install -g cordova ionic
+npm install -g cordova ionic bower
 ```
 In the 'vacationFrontend' folder:
 ```
 npm install
+bower install
 ionic serve
 ```
 Your internet browser should open.
