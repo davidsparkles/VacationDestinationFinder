@@ -132,8 +132,9 @@ public class DefaultDestinationResource implements org.semantic.vacationDestinat
 				"PREFIX dbc: <http://dbpedia.org/resource/Category:>\n" +
 				"select distinct *\n" + 
 				"Where{"+
+				"?settlement geo:geometry ?point ."+
 					settlementBasis+
-					"?settlement geo:geometry ?point ."+
+
 					"OPTIONAL {?settlement dbo:elevation ?elevation} ."+
 					"OPTIONAL {?settlement dbo:country ?country} ."+
 					"?settlement dbo:populationTotal ?population ."+
