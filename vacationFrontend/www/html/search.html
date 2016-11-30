@@ -12,27 +12,8 @@
 
                 </select>
             </label> -->
-            <ion-item id="item_month" class="item-divider ">Month</ion-item>
-            <label id="selectMonth" class="item item-select">
-                <span class="input-label"></span>
-                <select ng-model="month" ng-init="" name="dropdown_month" required>
-                    <option value=0 ng-selected="true">Any month</option>
-                    <option value=1>January</option>
-                    <option value=2>February</option>
-                    <option value=3>March</option>
-                    <option value=4>April</option>
-                    <option value=5>May</option>
-                    <option value=6>June</option>
-                    <option value=7>July</option>
-                    <option value=8>August</option>
-                    <option value=9>September</option>
-                    <option value=10>October</option>
-                    <option value=11>November</option>
-                    <option value=12>December</option>
-                </select>
-            </label>
 
-            <ion-item id="item_distances" class="item-divider">Distance</ion-item>
+            <!-- <ion-item id="item_distances" class="item-divider">Distance</ion-item>
             <label id="selectDistance" class="item item-select">
                 <span class="input-label"></span>
                 <select ng-model="distance" ng-init="" name="dropdown_distance" required>
@@ -58,6 +39,27 @@
                     <option value="car" ng-selected="true">Car</option>
                     <option value="plane">Plane</option>
                 </select>
+            </label> -->
+
+            <ion-item  class="item-divider ">Country</ion-item>
+            <label  class="item item-select ">
+                <span class="input-label"></span>
+                <select ng-model="country" ng-init="" name="dropdown_country">
+                    <option value="" ng-selected="true">Any country</option>
+                    <option value={{x.name}} ng-repeat = "x in countries">{{x.name}}</option>
+
+                </select>
+            </label>
+
+            <ion-item id="item_population" class="item-divider ">Population</ion-item>
+            <label id="selectPopulation" class="item item-select">
+                <span class="input-label"></span>
+                <select ng-model="population" ng-init="" name="dropdown_population" required>
+                    <option value="" ng-selected="true">Any population</option>
+                    <option value="small">Small (&lt 70,000 inhabitants)</option>
+                    <option value="medium">Medium (70,000 - 1,000,000 inhabitants)</option>
+                    <option value="large">Large (&gt 1,000,000 inhabitants)</option>
+                </select>
             </label>
 
             <ion-item id="item_specification" class="item-divider ">Specification</ion-item>
@@ -70,41 +72,51 @@
                 </select>
             </label>
 
+
+            <ion-item id="item_month" class="item-divider ">Month</ion-item>
+            <label id="selectMonth" class="item item-select">
+                <span class="input-label"></span>
+                <select ng-model="month" ng-init="" name="dropdown_month" required>
+                    <option value=0 ng-selected="true">Any month</option>
+                    <option value=1>January</option>
+                    <option value=2>February</option>
+                    <option value=3>March</option>
+                    <option value=4>April</option>
+                    <option value=5>May</option>
+                    <option value=6>June</option>
+                    <option value=7>July</option>
+                    <option value=8>August</option>
+                    <option value=9>September</option>
+                    <option value=10>October</option>
+                    <option value=11>November</option>
+                    <option value=12>December</option>
+                </select>
+            </label>
+
             <ion-item id="item_temperatures" class="item-divider">Temperatures</ion-item>
             <label id="selectTemperature" class="item item-select">
                 <span class="input-label"></span>
                 <select ng-model="temperature" ng-init="" name="dropdown_temperature" required>
                     <option value="" ng-selected="true">Any temperature</option>
-                    <option value="0">0°C</option>
-                    <option value="4">4°C</option>
-                    <option value="8">8°C</option>
-                    <option value="10">10°C</option>
-                    <option value="14">14°C</option>
-                    <option value="18">18°C</option>
-                    <option value="22">22°C</option>
-                    <option value="26">26°C</option>
-                    <option value="30">30°C</option>
-                    <option value="34">34°C</option>
-                    <option value="38">38°C</option>
+                    <option value="0">&gt0°C</option>
+                    <option value="4">&gt4°C</option>
+                    <option value="8">&gt8°C</option>
+                    <option value="10">&gt10°C</option>
+                    <option value="14">&gt14°C</option>
+                    <option value="18">&gt18°C</option>
+                    <option value="22">&gt22°C</option>
+                    <option value="26">&gt26°C</option>
+                    <option value="30">&gt30°C</option>
                 </select>
             </label>
             <!-- <input type="text" ng-model="temperature" name="textfieldTemperature" onkeypress='return event.charCode >= 48 && event.charCode <= 57'required> -->
 
-            <!-- <ion-item  class="item-divider ">Country</ion-item>
-            <label  class="item item-select ">
-                <span class="input-label"></span>
-                <select ng-model="sel_country" ng-init="" name="dropdown_country">
-                    <option ng-selected="true">Germany</option>
-                    <option ng-repeat = "x in countries">{{x.name}}</option>
-
-                </select>
-            </label>
-            <ion-item  class="item-divider ">From where?</ion-item>
+            <!-- <ion-item  class="item-divider ">From where?</ion-item>
             <label id="input_fromwhere" class="item item-input ">
                 <input type="text" ng-model="fromwhere" name="input_fromwhere">
-            </label> -->
+            </label>  -->
             <!--<ion-radio  ng-repeat = "item in sorterOrder" ng-value="item.value" ng-model="dataOrder.value" name="order"  id="radio2">{{item.text}}</ion-radio>-->
-            <a class=" button button-positive  button-block icon ion-search"  ng-click="search(month,distance,transportation,specification,temperature)" id="but_search">Search Locations</a>
+            <a class=" button button-positive  button-block icon ion-search"  ng-click="search(month,country,population,specification,temperature)" id="but_search">Search Locations</a>
     </form>
 
 
