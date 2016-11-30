@@ -19,31 +19,35 @@ angular.module('starter.controllers', [])
 })
 
 .controller('SearchCtrl', function($scope, $state, $http, apiendpoint, locations) {
+  $scope.population = "";
+  $scope.country = "";
   $scope.month = 0;
-  $scope.distance = "12h";
-  $scope.transportation = "car";
+  // $scope.distance = "12h";
+  // $scope.transportation = "car";
   $scope.specification = "";
   $scope.temperature = "";
 
   // $scope.continent = "TMP_ALL";
   // $scope.fromwhere = "Anywhere";
-  // $scope.countries = [];
-  // $scope.sel_country = "";
-  // $http.get("data/countries.json")
-  //   .success(function(json) {
-  //     $scope.countries = json;
-  // });
+  $scope.countries = [];
+  $scope.country = "";
+  $http.get("data/countries.json")
+    .success(function(json) {
+      $scope.countries = json;
+  });
 
   $scope.results = [];
 
-  $scope.search = function(month,distance,transportation,specification,temperature) {
+  $scope.search = function(month,country,population,specification,temperature) {
     var parameter = {
-      "distance":distance,
-      "transportation":transportation
+      // "distance":distance,
+      // "transportation":transportation
     };
     if(month != 0) parameter.month = month;
-    if(specification != "") parameter.specification = specification;
-    if(temperature != "") parameter.temperature = temperature;
+    if(specification != "" && specification != undefined) parameter.specification = specification;
+    if(temperature != "" && temperature != undefined) parameter.temperature = temperature;
+    if(population != "" && population != undefined) parameter.population = population;
+    if(country != "" && country != undefined) parameter.country = country;
 
     console.log(parameter);
 
@@ -52,10 +56,10 @@ angular.module('starter.controllers', [])
     $http.post(apiendpoint.url + '/destination', parameter).success(function(response) {
       $scope.results = [];
       for(var city in response) $scope.results = $scope.results.concat([{name:city,lat:response[city][0].lat,long:response[city][1].long}]);
-      console.log($scope.results);
+      // console.log($scope.results);
       locations.setLocations($scope.results);
-      console.log("read from factory");
-      console.log(locations.getLocations());
+      // console.log("read from factory");
+      // console.log(locations.getLocations());
       $scope.openMap()
     });
     // $http.get(apiendpoint.url + '/destination').success(function(response) {
