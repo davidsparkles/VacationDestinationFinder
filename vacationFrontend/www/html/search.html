@@ -1,7 +1,7 @@
 <ion-view view-title="Vacation Destination Finder">
   <ion-content>
     <form class="list " id="form_search">
-            <!-- <ion-item id="item_temperatures" class="item-divider ">Temperatures</ion-item>
+           <!-- <ion-item id="item_temperatures" class="item-divider ">Temperatures</ion-item>
             <label id="selectTemperature" class="item item-select">
                 <span class="input-label"></span>
                 <select ng-model="temperature" ng-init="" name="dropdown_temperature" required>
@@ -11,12 +11,13 @@
                     <option value="TMP_HOT">Hot</option>
 
                 </select>
-            </label> -->
+            </label>-->
 
-            <!-- <ion-item id="item_distances" class="item-divider">Distance</ion-item>
+            <ion-item id="item_distances" class="item-divider">Distance</ion-item>
             <label id="selectDistance" class="item item-select">
                 <span class="input-label"></span>
                 <select ng-model="distance" ng-init="" name="dropdown_distance" required>
+                    <option value="" ng-selected="true">Any distance</option>
                     <option value="1h">1 hour</option>
                     <option value="2h">2 hour</option>
                     <option value="3h">3 hour</option>
@@ -28,7 +29,7 @@
                     <option value="9h">9 hour</option>
                     <option value="10h">10 hour</option>
                     <option value="11h">11 hour</option>
-                    <option value="12h" ng-selected="true">12 hour</option>
+                    <option value="12h">12 hour</option>
                 </select>
             </label>
 
@@ -36,10 +37,11 @@
             <label id="selectTransportation" class="item item-select">
                 <span class="input-label"></span>
                 <select ng-model="transportation" ng-init="" name="dropdown_transportation" required>
-                    <option value="car" ng-selected="true">Car</option>
+                    <option value="" ng-selected="true">Any transportation</option>
+                    <option value="car">Car</option>
                     <option value="plane">Plane</option>
                 </select>
-            </label> -->
+            </label>
 
             <ion-item  class="item-divider ">Country</ion-item>
             <label  class="item item-select ">
@@ -116,7 +118,7 @@
                 <input type="text" ng-model="fromwhere" name="input_fromwhere">
             </label>  -->
             <!--<ion-radio  ng-repeat = "item in sorterOrder" ng-value="item.value" ng-model="dataOrder.value" name="order"  id="radio2">{{item.text}}</ion-radio>-->
-            <a class=" button button-positive  button-block icon ion-search"  ng-click="search(month,country,population,specification,temperature)" id="but_search">Search Locations</a>
+            <a class=" button button-positive  button-block icon ion-search"  ng-click="search(month,country,population,specification,temperature,distance,transportation)" id="but_search">Search Locations</a>
     </form>
 
 

@@ -22,8 +22,8 @@ angular.module('starter.controllers', [])
   $scope.population = "";
   $scope.country = "";
   $scope.month = 0;
-  // $scope.distance = "12h";
-  // $scope.transportation = "car";
+  $scope.distance = "";
+  $scope.transportation = "";
   $scope.specification = "";
   $scope.temperature = "";
 
@@ -38,7 +38,7 @@ angular.module('starter.controllers', [])
 
   $scope.results = [];
 
-  $scope.search = function(month,country,population,specification,temperature) {
+  $scope.search = function(month,country,population,specification,temperature,distance,transportation) {
     var parameter = {
       // "distance":distance,
       // "transportation":transportation
@@ -48,6 +48,8 @@ angular.module('starter.controllers', [])
     if(temperature != "" && temperature != undefined) parameter.temperature = temperature;
     if(population != "" && population != undefined) parameter.population = population;
     if(country != "" && country != undefined) parameter.country = country;
+    if(distance != "" && distance != undefined) parameter.distance = distance;
+    if(transportation != "" && transportation != undefined) parameter.transportation = transportation;
 
     console.log(parameter);
 
